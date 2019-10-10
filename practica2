@@ -1,0 +1,50 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy import integrate as integrate
+import random as rnd
+
+from pandas.io.parsers import read_csv
+
+def carga_csv(file_name):
+    valores = read_csv(file_name, header=None).values
+
+    return valores.astype(float)
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def pinta_frontera_recta(X, Y, theta):
+    plt.figure()
+    x1_min, x1_max = X[:, 0].min(), X[:, 0].max()
+    x2_min, x2_max = X[:, 1].min(), X[:, 1].max()
+
+    xx1, xx2 = np.meshgrid(np.linspace(x1_min, x1_max),
+    np.linspace(x2_min, x2_max))
+
+    h = sigmoid(np.c_[np.ones((xx1.ravel().shape[0], 1)), xx1.ravel(), xx2.ravel()].dot(theta))
+    h = h.reshape(xx1.shape)
+
+    # el cuarto parámetro es el valor de z cuya frontera se
+    # quiere pintar
+    plt.contour(xx1, xx2, h, [0.5], linewidths=1, colors='b')
+    #plt.savefig("frontera.pdf")
+    plt.close()
+
+data = carga_csv("ex2data1.csv")
+thetha = np.arange(2)
+thetha[0] = 0.0
+thetha[1] = 0.0
+vX = []
+vY = []
+
+vX = data[:, :-1]
+np.shape(vX)
+vY = data[:, -1]
+np.shape(vY)
+pinta_frontera_recta(vX,vY,thetha)
+posi = np.where(vY != 1)
+plt.scatter(vX[posi,0], vX[posi,1], marker='.' , c='green')
+pos = np.where(vY == 1)
+plt.scatter(vX[pos,0], vX[pos,1], marker='+' , c='red')
+
+plt.show()
